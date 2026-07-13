@@ -16,7 +16,7 @@ import { Header } from './components/Header';
 import { ConfigModal } from './components/ConfigModal';
 import { DEMO_POSTS } from './data/demoPosts';
 
-const DEFAULT_API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:8000' : 'http://localhost:8000';
+const DEFAULT_API_URL = 'https://guised-up-real-connections-feed-social.onrender.com';
 
 export default function App() {
   const [posts, setPosts] = useState<PostItem[]>([]);
