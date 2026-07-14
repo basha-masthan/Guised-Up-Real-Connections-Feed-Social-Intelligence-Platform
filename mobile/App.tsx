@@ -58,12 +58,14 @@ export default function App() {
       return;
     }
 
+    let newToken = '';
     try {
       // Grab a test bearer token from public helper endpoint
       const tokenResp = await fetch(`${apiUrl}/api/test-token?user_id=${currentUser.id}`);
       if (tokenResp.ok) {
         const tokenData = await tokenResp.json();
-        setBearerToken(tokenData.token || '');
+        newToken = tokenData.token || '';
+        setBearerToken(newToken);
       }
     } catch (e) {
       // If live backend cannot be reached, automatically fall back to demo mode gracefully
@@ -73,10 +75,10 @@ export default function App() {
       return;
     }
 
-    fetchFeed(1, true);
+    fetchFeed(1, true, newToken);
   };
 
-  const fetchFeed = async (pageNum: number, reset: boolean = false) => {
+  const fetchFeed = async (pageNum: number, reset: boolean = false, overrideToken?: string) => {
     if (isDemoMode) {
       if (reset) {
         setPosts(DEMO_POSTS);
@@ -102,8 +104,9 @@ export default function App() {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
-      if (bearerToken) {
-        headers['Authorization'] = `Bearer ${bearerToken}`;
+      const tokenToUse = overrideToken !== undefined ? overrideToken : bearerToken;
+      if (tokenToUse) {
+        headers['Authorization'] = `Bearer ${tokenToUse}`;
       }
 
       const resp = await fetch(`${apiUrl}/api/feed?page=${pageNum}`, { headers });
