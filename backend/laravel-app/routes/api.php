@@ -31,6 +31,16 @@ Route::get('/test-token', function (Request $request) {
     ]);
 });
 
+// Public helper route to reset and seed the database without shell access
+Route::get('/refresh-db', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--seed' => true]);
+        return response()->json(['success' => true, 'message' => 'Database refreshed and seeded successfully!']);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+    }
+});
+
 // Authenticated Routes (Sanctum Bearer Token)
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
