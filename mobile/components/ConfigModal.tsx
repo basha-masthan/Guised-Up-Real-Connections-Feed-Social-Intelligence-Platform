@@ -17,6 +17,18 @@ const TEST_USERS = [
   { id: 1, name: 'Aarav Sharma' },
   { id: 2, name: 'Diya Patel' },
   { id: 3, name: 'Rohan Gupta' },
+  { id: 4, name: 'Maya Lin' },
+  { id: 5, name: 'Vikram Singh' },
+  { id: 6, name: 'Priya Kapoor' },
+  { id: 7, name: 'Arjun Mehta' },
+  { id: 8, name: 'Sara Ali' },
+  { id: 9, name: 'Karan Joshi' },
+  { id: 10, name: 'Ananya Reddy' },
+  { id: 11, name: 'Rahul Verma' },
+  { id: 12, name: 'Ishita Nair' },
+  { id: 13, name: 'Dev Thakur' },
+  { id: 14, name: 'Naina Pillai' },
+  { id: 15, name: 'Kabir Bhatia' },
 ];
 
 export const ConfigModal: React.FC<ConfigModalProps> = ({
@@ -87,7 +99,7 @@ export const ConfigModal: React.FC<ConfigModalProps> = ({
                 <TouchableOpacity
                   key={u.id}
                   style={[styles.userChip, currentUser.id === u.id && styles.userChipActive]}
-                  onPress={() => { setCurrentUser(u); onReload(); }}
+                  onPress={() => { setCurrentUser(u); }}
                 >
                   <Text style={[styles.userChipText, currentUser.id === u.id && styles.userChipTextActive]}>
                     👤 {u.name.split(' ')[0]}

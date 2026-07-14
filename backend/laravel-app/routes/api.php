@@ -11,9 +11,10 @@ use App\Models\User;
 |--------------------------------------------------------------------------
 */
 
-// Public helper route to instantly grab a test bearer token for candidate testing / demo
-Route::get('/test-token', function () {
-    $user = User::first();
+Route::get('/test-token', function (Request $request) {
+    $userId = $request->query('user_id');
+    $user = $userId ? User::find($userId) : User::first();
+    
     if (!$user) {
         return response()->json(['success' => false, 'message' => 'No users seeded yet.'], 404);
     }

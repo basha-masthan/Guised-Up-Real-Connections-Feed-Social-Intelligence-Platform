@@ -60,7 +60,7 @@ export default function App() {
 
     try {
       // Grab a test bearer token from public helper endpoint
-      const tokenResp = await fetch(`${apiUrl}/api/test-token`);
+      const tokenResp = await fetch(`${apiUrl}/api/test-token?user_id=${currentUser.id}`);
       if (tokenResp.ok) {
         const tokenData = await tokenResp.json();
         setBearerToken(tokenData.token || '');
@@ -158,12 +158,38 @@ export default function App() {
     if (isDemoMode) {
       setTimeout(() => {
         const queryLower = searchQuery.toLowerCase().trim();
+        const topics: [RegExp, string[]][] = [
+          [/travel|wander|hike|triund|spiti|jaipur|varanasi|delhi|train/, ['travel', 'wander', 'hike', 'triund', 'spiti', 'jaipur', 'varanasi', 'delhi', 'train']],
+          [/food|recipe|cook|chai|biryani|paneer|momo|baking|sourdough|street food/, ['food', 'recipe', 'cook', 'chai', 'biryani', 'paneer', 'momo', 'baking', 'sourdough']],
+          [/startup|founder|funding|vc|invest|pitch|burnout|startup/, ['startup', 'founder', 'funding', 'vc', 'invest', 'pitch', 'burnout']],
+          [/code|tech|deploy|open.source|neovim|refactor|legacy|pair.program/, ['code', 'tech', 'deploy', 'open source', 'neovim', 'refactor', 'legacy', 'pair program']],
+          [/music|guitar|song|vinyl|open mic|guitar|acoustic|perform/, ['music', 'guitar', 'song', 'vinyl', 'open mic', 'acoustic', 'perform']],
+          [/fitness|workout|marathon|gym|run|exercise|discipline/, ['fitness', 'workout', 'marathon', 'gym', 'run', 'exercise', 'discipline']],
+          [/poetry|poem|write|writer|poet|collection|published/, ['poetry', 'poem', 'write', 'writer', 'poet', 'collection', 'published']],
+          [/gaming|stream|valorant|gamer|pc|twitch/, ['gaming', 'stream', 'valorant', 'gamer', 'pc', 'twitch']],
+          [/book|read|library|novel|reading/, ['book', 'read', 'library', 'novel', 'reading']],
+          [/yoga|wellness|meditation|gratitude|mindfulness/, ['yoga', 'wellness', 'meditation', 'gratitude', 'mindfulness']],
+          [/fashion|design|outfit|saree|thrift|diwali/, ['fashion', 'design', 'outfit', 'saree', 'thrift', 'diwali']],
+          [/journalism|podcast|interview|story|history|freedom/, ['journalism', 'podcast', 'interview', 'story', 'history', 'freedom']],
+          [/love|relationship|friend|friend|connection|lonely/, ['love', 'relationship', 'friend', 'connection', 'lonely']],
+          [/coffee|tea|morning|breeze|quiet/, ['coffee', 'tea', 'morning', 'breeze', 'quiet']],
+        ];
+
+        const matchedTopic = topics.find(([regex]) => regex.test(queryLower));
+        const keywords = matchedTopic ? matchedTopic[1] : null;
+
         const filtered = DEMO_POSTS.map(p => {
-          let score = 0.65;
-          if (p.content.toLowerCase().includes(queryLower)) score = 0.94;
-          else if (queryLower.includes('travel') && p.content.toLowerCase().includes('jaipur')) score = 0.89;
-          else if (queryLower.includes('work') && p.content.toLowerCase().includes('burnout')) score = 0.91;
-          return { ...p, similarity_score: score };
+          const contentLower = p.content.toLowerCase();
+          let score = 0.45;
+          if (contentLower.includes(queryLower)) {
+            score = 0.95;
+          } else if (keywords) {
+            const matches = keywords.filter(k => contentLower.includes(k)).length;
+            if (matches > 0) {
+              score = 0.65 + (matches / keywords.length) * 0.30;
+            }
+          }
+          return { ...p, similarity_score: Math.min(0.99, Math.round(score * 100) / 100) };
         }).sort((a, b) => (b.similarity_score || 0) - (a.similarity_score || 0));
 
         setSearchResults(filtered);
